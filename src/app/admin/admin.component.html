@@ -1,0 +1,88 @@
+<div class="main-block selected-subject-block rad-5">
+  <span class="reg-txt">
+    <h4>
+      Subject Registration Form
+    </h4>
+  </span>
+  <form [formGroup]="adminForm">
+    <table class="table">
+      <thead></thead>
+      <tbody>
+        <tr>
+          <td colspan="3">
+            <mat-form-field>
+              <mat-select placeholder="Session" [(value)]="selectedSession" (selectionChange)="onDropdownSelection()"
+                formControlName="session">
+                <mat-option [value]="2018-19">2018-19 </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <mat-form-field>
+              <mat-select placeholder="Class" [(value)]="selectedClass" (selectionChange)="onDropdownSelection()"
+                formControlName="class">
+                <mat-option *ngFor="let class of classesList" [value]="class.id">
+                  {{class.val}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+
+        </tr>
+        <tr *ngIf="showAddSubjectRow">
+          <td>
+            <mat-form-field>
+              <mat-select placeholder="Subject Name" formControlName="subject_id">
+                <mat-option *ngFor="let s of allSubjects" [value]="s.subject_id">
+                  {{s.subject_label}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field>
+              <mat-select placeholder="Marking Type" formControlName="subject_type">
+                <mat-option value="grade"> Grade </mat-option>
+                <mat-option value="number"> Number </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <i (click)="onClickAddSubject(i)" class="fa-icons fa-add fa fa-check-circle"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="selected-subject-block" *ngIf="selectedSubjects?.length > 0">
+      <h5>Selected Subjects ({{selectedSubjects?.length}}):</h5>
+      <table class="table">
+        <thead>
+          <th>Subject Name</th>
+          <th>Marking Type</th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of selectedSubjects">
+            <td>
+              {{s.subject_label}}
+            </td>
+            <td>
+              {{s.subject_type}}
+            </td>
+            <td>
+              <i (click)="onClickRemoveSubjectFromList(s)" class="fa-icons fa-del fa fa-trash-o"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="submit-btn" *ngIf="selectedSubjects?.length > 0">
+      <button class="btn btn-primary" (click)="onClckSubmit()">
+        SUBMIT
+      </button>
+    </div>
+
+  </form>
+</div>
