@@ -5,7 +5,7 @@ export var APP_CONFIG = {
     DATA_ENTRY_ICON: getConfigs()["DATA_ENTRY_ICON"]
 };
 
-export var APP_URLS = {
+export var URL_CONFIG = {
     BASE_URL: getConfigs()["BASE_URL"],
     INSERT_SUBJECT_DETAILS: "/insertclassdetails",
     GET_SESSION_CLASS_SUBJECTS: "/subjectdetails"
