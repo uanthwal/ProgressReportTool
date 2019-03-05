@@ -114,7 +114,7 @@ export class AdminComponent implements OnInit {
         }
     }
 
-    onClckSubmit() {
+    onClickSubmit() {
         let payload = {
             session: this.selectedSession,
             class: this.selectedClass,
