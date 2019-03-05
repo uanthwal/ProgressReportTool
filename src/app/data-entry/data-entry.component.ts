@@ -5,6 +5,7 @@ import {
   Validators,
   FormBuilder
 } from "@angular/forms";
+import { AppService } from '../app.service';
 
 @Component({
   selector: "app-data-entry",
@@ -36,7 +37,7 @@ export class DataEntryComponent implements OnInit {
   fourthFormGroup: FormGroup;
   absentCheckSelected = false;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private _appService: AppService) { }
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
@@ -108,8 +109,14 @@ export class DataEntryComponent implements OnInit {
         class: this.selectedClass,
         subjects: this.selectedSubjects
       };
-      this.showAddSubjectRow = true;
+      this._appService.getProducts().subscribe((data: {}) => {
+        debugger;
+        console.log(data);
+        this.showAddSubjectRow = true;
+      });
     }
+
+
   }
 
   onClickSubmit(action) {
@@ -192,11 +199,16 @@ export class DataEntryComponent implements OnInit {
 
   onBlurRollNumber() {
     let studentRollNo = this.firstFormGroup.controls['rollNumber'].value;
-    if( null != this.studentInfo && (studentRollNo == this.studentInfo.roll_no)) {
+    if (null != this.studentInfo && (studentRollNo == this.studentInfo.roll_no)) {
       return;
     }
     this.thirdFormGroup.reset();
     this.fourthFormGroup.reset();
     this.selectedSubjects = [];
+    this._appService.getProducts().subscribe((data: {}) => {
+      debugger;
+      console.log(data);
+      this.showAddSubjectRow = true;
+    });
   }
 }
