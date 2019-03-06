@@ -29,7 +29,7 @@
           </tr>
           <tr>
             <td>Student Name: </td>
-            <td> {{studentInfo?.name}}</td>
+            <td> {{studentInfo?.student_name}}</td>
           </tr>
           <tr>
             <td>Class: </td>
@@ -52,9 +52,8 @@
             <tr>
               <td colspan="3">
                 <mat-form-field>
-                  <mat-select placeholder="Session" [(value)]="selectedSession" (selectionChange)="onDropdownSelection()"
-                    formControlName="session" required>
-                    <mat-option [value]="2018-19">2018-19 </mat-option>
+                  <mat-select placeholder="Session" [(value)]="selectedSession" formControlName="session" required>
+                    <mat-option value="2018-19">2018-19 </mat-option>
                   </mat-select>
                 </mat-form-field>
               </td>
@@ -62,8 +61,7 @@
             <tr>
               <td colspan="3">
                 <mat-form-field>
-                  <mat-select placeholder="Class" [(value)]="selectTerm" (selectionChange)="onDropdownSelection()"
-                    formControlName="term">
+                  <mat-select placeholder="Term" [(value)]="selectTerm" formControlName="term">
                     <mat-option *ngFor="let term of termsList" [value]="term.id">
                       {{term.val}}
                     </mat-option>
@@ -76,7 +74,7 @@
       </form>
       <div>
         <button mat-button matStepperPrevious class="first-btn btn btn-primary">Back</button>
-        <button mat-button matStepperNext class="btn btn-primary">Next</button>
+        <button mat-button matStepperNext (click)="getSubjectListForSession()" class="btn btn-primary">Next</button>
       </div>
     </mat-step>
     <mat-step [stepControl]="fourthFormGroup">
@@ -85,6 +83,7 @@
         <table class="table">
           <thead>
             <th>Subject</th>
+            <th>Grade</th>
             <th>Marks</th>
             <th>Absent</th>
             <th>Action</th>
@@ -93,11 +92,16 @@
             <tr>
               <td>
                 <mat-form-field>
-                  <mat-select placeholder="Subject Name" formControlName="subject_id">
+                  <mat-select placeholder="Subject Name" formControlName="subject_id" (selectionChange)="onSubjectSelection()">
                     <mat-option *ngFor="let s of allSubjects" [value]="s.subject_id">
                       {{s.subject_label}}
                     </mat-option>
                   </mat-select>
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field>
+                  <input matInput placeholder="Grade" formControlName="subject_grade">
                 </mat-form-field>
               </td>
               <td>
@@ -120,16 +124,16 @@
           <table class="table">
             <thead>
               <th>Subject Name</th>
-              <th>Marks</th>
+              <th>Marks/Grade</th>
               <th>Action</th>
             </thead>
             <tbody>
               <tr *ngFor="let s of selectedSubjects">
                 <td>
-                  {{s.subject_id}}
+                  {{s.subject_label}}
                 </td>
                 <td>
-                  {{s.subject_marks}}
+                  {{(s.marking_type == 'number' && !s.absentCheckSelected) ? s.number : ((s.marking_type == 'grade' && !s.absentCheckSelected) ? s.grade : 'AB')}}
                 </td>
                 <td>
                   <i (click)="onClickRemoveSubjectFromList(s)" class="fa-icons fa-del fa fa-trash-o"></i>

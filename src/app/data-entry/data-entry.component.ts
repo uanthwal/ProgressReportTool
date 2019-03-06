@@ -5,7 +5,7 @@ import {
   Validators,
   FormBuilder
 } from "@angular/forms";
-import { AppService } from '../app.service';
+import { AppService } from "../app.service";
 
 @Component({
   selector: "app-data-entry",
@@ -26,7 +26,6 @@ export class DataEntryComponent implements OnInit {
   });
   allSubjects = [];
   selectedSubjects = [];
-  selectedRollNo: any = "";
   studentInfo = null;
   showAddMarksSection = false;
 
@@ -37,7 +36,10 @@ export class DataEntryComponent implements OnInit {
   fourthFormGroup: FormGroup;
   absentCheckSelected = false;
 
-  constructor(private _formBuilder: FormBuilder, private _appService: AppService) { }
+  constructor(
+    private _formBuilder: FormBuilder,
+    private _appService: AppService
+  ) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
@@ -51,39 +53,26 @@ export class DataEntryComponent implements OnInit {
     this.fourthFormGroup = this._formBuilder.group({
       subject_id: ["", Validators.required],
       subject_marks: ["", Validators.required],
+      subject_grade: [""],
       absent_check: [false]
     });
 
     this.classesList = [
-      { id: "1", val: "Class I" },
-      { id: "2", val: "Class II" },
-      { id: "3", val: "Class III" },
-      { id: "4", val: "Class IV" },
-      { id: "5", val: "Class V" },
-      { id: "6", val: "Class VI" },
-      { id: "7", val: "Class VII" },
-      { id: "8", val: "Class VIII" },
-      { id: "9", val: "Class IX" },
-      { id: "10", val: "Class X" }
+      { id: "1", val: "I" },
+      { id: "2", val: "II" },
+      { id: "3", val: "III" },
+      { id: "4", val: "IV" },
+      { id: "5", val: "V" },
+      { id: "6", val: "VI" },
+      { id: "7", val: "VII" },
+      { id: "8", val: "VIII" },
+      { id: "9", val: "IX" },
+      { id: "10", val: "X" }
     ];
     this.termsList = [
-      { id: "termI", val: "Term I" },
-      { id: "termII", val: "Term II" },
-      { id: "termIII", val: "Term III" }
-    ];
-    this.allSubjects = [
-      {
-        subject_id: "mathematics",
-        subject_label: "Mathematics"
-      },
-      {
-        subject_id: "english",
-        subject_label: "English"
-      },
-      {
-        subject_id: "science",
-        subject_label: "Science"
-      }
+      { id: "1", val: "Term I" },
+      { id: "2", val: "Term II" },
+      { id: "3", val: "Term III" }
     ];
   }
 
@@ -92,69 +81,108 @@ export class DataEntryComponent implements OnInit {
     return index.length > 0 ? index[0]["val"] : classId;
   }
 
-  onDropdownSelection() {
-    this.selectedSession =
-      this.selectedSession == null || this.selectedSession == undefined
-        ? null
-        : this.selectedSession;
-    this.selectedClass =
-      this.selectedClass == null || this.selectedClass == undefined
-        ? null
-        : this.selectedClass;
-    if (null != this.selectedSession && null != this.selectedClass) {
-      console.log("API CALL");
-      // API Call here to fetch the data: Pending at Naina
-      let payload = {
-        session: this.selectedSession,
-        class: this.selectedClass,
-        subjects: this.selectedSubjects
-      };
-      this._appService.getProducts().subscribe((data: {}) => {
-        debugger;
-        console.log(data);
+  getSubjectListForSession() {
+    let payload = {
+      session: this.thirdFormGroup.controls["session"].value,
+      class_name: this.studentInfo["class_name"],
+      roll_no: this.studentInfo["roll_no"],
+      term: this.thirdFormGroup.controls["term"].value
+    };
+    this._appService.getSubjectsForSession(payload).subscribe((data: {}) => {
+      if (null != data && data["status"] == 200) {
+        this.allSubjects = data["selected_subjects"];
+        this.selectedSubjects = [];
         this.showAddSubjectRow = true;
-      });
-    }
-
-
+        this.getStudentMarks(payload);
+      }
+    });
   }
 
-  // onClickSubmit(action) {
-  //   if (action == "GET_STU_INFO") {
-  //     let payload = {
-  //       student_roll_no: this.selectedRollNo
-  //     };
-  //     // API here : fetch student details
-  //     this.studentInfo = {};
-  //     this.studentInfo = {
-  //       session: "2018-2019",
-  //       roll_no: "9876",
-  //       name: "Naina Jaiswal",
-  //       class_name: "1"
-  //     };
-  //   } else if (action == "ADD_MARKS") {
-  //     this.showAddMarksSection = true;
-  //   }
-  // }
+  getStudentMarks(payload) {
+    this._appService.getStudentMarks(payload).subscribe((data: {}) => {
+      if (null != data && data["status"] == 200) {
+        this.selectedSubjects = data["marks"] == null ? [] : data["marks"];
+        this.showAddSubjectRow = true;
+      }
+    });
+  }
+
+  onClickSubmit(action) {
+    if (action == "GET_STU_INFO") {
+      let studentRollNo = this.firstFormGroup.controls["rollNumber"].value;
+      let payload = {
+        roll_no: studentRollNo
+      };
+      this.studentInfo = {};
+      this._appService.getStudentDetails(payload).subscribe((data: {}) => {
+        if (null == data["student_details"]) {
+          alert(data["message"]);
+        } else {
+          this.studentInfo = data["student_details"];
+          this.showAddSubjectRow = true;
+        }
+      });
+    } else if (action == "ADD_MARKS") {
+      this.showAddMarksSection = true;
+    }
+  }
 
   onClickAbsentBtn() {
     this.absentCheckSelected = !this.absentCheckSelected;
     if (this.absentCheckSelected) {
       this.fourthFormGroup.controls["subject_marks"].disable();
       this.fourthFormGroup.controls["subject_marks"].setValue(null);
-    }
-    else
+      this.fourthFormGroup.controls["subject_grade"].disable();
+      this.fourthFormGroup.controls["subject_grade"].setValue(null);
+    } else {
       this.fourthFormGroup.controls["subject_marks"].enable();
+      this.fourthFormGroup.controls["subject_grade"].enable();
+    }
+  }
+
+  onSubjectSelection() {
+    let selectedSubjectId = this.fourthFormGroup.controls["subject_id"].value;
+    let selectedSubject = this.allSubjects.filter(
+      _ => _.subject_id == selectedSubjectId
+    );
+    this.fourthFormGroup.controls["absent_check"].setValue(false);
+    this.absentCheckSelected = false;
+    let markingType = selectedSubject[0]["marking_type"];
+    if (markingType == "number") {
+      this.fourthFormGroup.controls["subject_marks"].enable();
+      this.fourthFormGroup.controls["subject_marks"].setValue(null);
+      this.fourthFormGroup.controls["subject_grade"].disable();
+      this.fourthFormGroup.controls["subject_grade"].setValue(null);
+    } else if (markingType == "grade") {
+      this.fourthFormGroup.controls["subject_marks"].disable();
+      this.fourthFormGroup.controls["subject_marks"].setValue(null);
+      this.fourthFormGroup.controls["subject_grade"].enable();
+      this.fourthFormGroup.controls["subject_grade"].setValue(null);
+    }
   }
 
   onClickAddSubject() {
     let selectedSubjectId = this.fourthFormGroup.controls["subject_id"].value;
-    let selectedSubjectMarks = this.fourthFormGroup.controls["subject_marks"]
-      .value;
+    let selectedSubject = this.allSubjects.filter(
+      _ => _.subject_id == selectedSubjectId
+    );
+    if (selectedSubject.length == 0) {
+      return;
+    }
+    let markingType = selectedSubject[0]["marking_type"];
+    let selectedSubjectMarks = null;
+    if (markingType == "number" && !this.absentCheckSelected) {
+      selectedSubjectMarks = this.fourthFormGroup.controls["subject_marks"]
+        .value;
+    } else if (markingType == "grade" && !this.absentCheckSelected) {
+      selectedSubjectMarks = this.fourthFormGroup.controls["subject_grade"]
+        .value;
+    }
+
     selectedSubjectMarks =
       selectedSubjectMarks == null ||
-        selectedSubjectMarks == undefined ||
-        selectedSubjectMarks == ""
+      selectedSubjectMarks == undefined ||
+      selectedSubjectMarks == ""
         ? null
         : selectedSubjectMarks;
     if (
@@ -168,25 +196,39 @@ export class DataEntryComponent implements OnInit {
       if (this.checkIfSubjectAlreadySelected(selectedSubjectId)) {
         alert(
           "Subject: " +
-          selectedSubject[0]["subject_label"] +
-          " is already selected"
+            selectedSubject[0]["subject_label"] +
+            " is already selected"
         );
         return;
       }
-      this.selectedSubjects.push({
+      let subjectObj = {
         subject_label: selectedSubject[0]["subject_label"],
+        marking_type: selectedSubject[0]["marking_type"],
         subject_id: selectedSubject[0]["subject_id"],
-        subject_marks: this.absentCheckSelected
-          ? "AB"
-          : selectedSubjectMarks
-      });
+        class_subject_allotment_id:
+          selectedSubject[0]["class_subject_allotment_id"]
+      };
+      subjectObj["absentCheckSelected"] = false;
+      if (markingType == "number" && !this.absentCheckSelected) {
+        subjectObj["number"] = selectedSubjectMarks;
+      }
+      if (markingType == "grade" && !this.absentCheckSelected) {
+        subjectObj["grade"] = selectedSubjectMarks;
+      }
+      if (this.absentCheckSelected) {
+        subjectObj["is_absent"] = true;
+        subjectObj["absentCheckSelected"] = true;
+      }
+      this.selectedSubjects.push(subjectObj);
       this.fourthFormGroup.controls["subject_id"].setValue(null);
       this.fourthFormGroup.controls["subject_marks"].setValue(null);
+      this.fourthFormGroup.controls["subject_grade"].setValue(null);
       if (this.absentCheckSelected) {
         this.absentCheckSelected = false;
         this.fourthFormGroup.controls["absent_check"].setValue(false);
-        this.fourthFormGroup.controls["subject_marks"].enable();
       }
+      this.fourthFormGroup.controls["subject_marks"].enable();
+      this.fourthFormGroup.controls["subject_grade"].enable();
     }
   }
 
@@ -198,18 +240,40 @@ export class DataEntryComponent implements OnInit {
   }
 
   onBlurRollNumber() {
-    let studentRollNo = this.firstFormGroup.controls['rollNumber'].value;
-    // if (null != null == this.studentInfo.roll_no || studentRollNo != "" || (studentRollNo == this.studentInfo.roll_no)) {
-    //   return;
-    // }
     this.thirdFormGroup.reset();
     this.fourthFormGroup.reset();
+    this.absentCheckSelected = false;
     this.selectedSubjects = [];
-    this._appService.getStudentDetails({roll_no:studentRollNo}).subscribe((data: {}) => {
-      debugger;
-      console.log(data);
-      this.studentInfo = data['student_details'];
-      this.showAddSubjectRow = true;
-    });
+  }
+
+  onClickSubmitMarks() {
+    if (this.allSubjects.length != this.selectedSubjects.length) {
+      alert("Please enter marks for All Subjects.");
+      return;
+    }
+    let payload = {
+      roll_no: this.studentInfo["roll_no"],
+      term: this.thirdFormGroup.controls["term"].value,
+      marks: this.selectedSubjects
+    };
+    let confirmResult = confirm("Click OK to Proceed");
+    if (confirmResult) {
+      this._appService.insertStudentMarks(payload).subscribe((data: {}) => {
+        if (null != data && data["status"] == 200) {
+          alert(data["message"]);
+        } else {
+          alert(data["message"]);
+        }
+      });
+    }
+  }
+
+  onClickRemoveSubjectFromList(subject) {
+    let index = this.selectedSubjects.findIndex(
+      _ => _.subject_id == subject.subject_id
+    );
+    if (index != -1) {
+      this.selectedSubjects.splice(index, 1);
+    }
   }
 }

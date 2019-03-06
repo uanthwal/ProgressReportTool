@@ -1,6 +1,5 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule, forwardRef } from "@angular/core";
-
+import { NgModule } from "@angular/core";
 import { AppComponent } from "./app.component";
 import { HomeComponent } from "./home/home.component";
 import { AdminComponent } from "./admin/admin.component";
@@ -14,13 +13,15 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatStepperModule } from '@angular/material/stepper';
 import { HttpClientModule } from '@angular/common/http';
 import { AppService } from './app.service';
+import { GenerateReportComponent } from './report-generate/report-generate.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     AdminComponent,
-    DataEntryComponent
+    DataEntryComponent,
+    GenerateReportComponent
   ],
   imports: [
     BrowserModule,
