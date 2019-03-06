@@ -34,6 +34,13 @@ export class AppService {
     );
   }
 
+  getStudentDetails(payload) {
+    return this.http.post<any>(URL_CONFIG.BASE_URL + URL_CONFIG.GET_STUDENT_DETAILS, JSON.stringify(payload), httpOptions).pipe(
+      map(this.extractData),
+      catchError(this.handleError<any>('getStudentDetails'))
+    );
+  }
+
   getProducts(): Observable<any> {
     return this.http.get("https://jsonplaceholder.typicode.com/todos/1").pipe(
       map(this.extractData));

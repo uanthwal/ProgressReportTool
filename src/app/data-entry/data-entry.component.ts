@@ -119,23 +119,23 @@ export class DataEntryComponent implements OnInit {
 
   }
 
-  onClickSubmit(action) {
-    if (action == "GET_STU_INFO") {
-      let payload = {
-        student_roll_no: this.selectedRollNo
-      };
-      // API here : fetch student details
-      this.studentInfo = {};
-      this.studentInfo = {
-        session: "2018-2019",
-        roll_no: "9876",
-        name: "Naina Jaiswal",
-        class_name: "1"
-      };
-    } else if (action == "ADD_MARKS") {
-      this.showAddMarksSection = true;
-    }
-  }
+  // onClickSubmit(action) {
+  //   if (action == "GET_STU_INFO") {
+  //     let payload = {
+  //       student_roll_no: this.selectedRollNo
+  //     };
+  //     // API here : fetch student details
+  //     this.studentInfo = {};
+  //     this.studentInfo = {
+  //       session: "2018-2019",
+  //       roll_no: "9876",
+  //       name: "Naina Jaiswal",
+  //       class_name: "1"
+  //     };
+  //   } else if (action == "ADD_MARKS") {
+  //     this.showAddMarksSection = true;
+  //   }
+  // }
 
   onClickAbsentBtn() {
     this.absentCheckSelected = !this.absentCheckSelected;
@@ -199,15 +199,16 @@ export class DataEntryComponent implements OnInit {
 
   onBlurRollNumber() {
     let studentRollNo = this.firstFormGroup.controls['rollNumber'].value;
-    if (null != this.studentInfo && (studentRollNo == this.studentInfo.roll_no)) {
-      return;
-    }
+    // if (null != null == this.studentInfo.roll_no || studentRollNo != "" || (studentRollNo == this.studentInfo.roll_no)) {
+    //   return;
+    // }
     this.thirdFormGroup.reset();
     this.fourthFormGroup.reset();
     this.selectedSubjects = [];
-    this._appService.getProducts().subscribe((data: {}) => {
+    this._appService.getStudentDetails({roll_no:studentRollNo}).subscribe((data: {}) => {
       debugger;
       console.log(data);
+      this.studentInfo = data['student_details'];
       this.showAddSubjectRow = true;
     });
   }
