@@ -8,13 +8,13 @@ export var APP_CONFIG = {
 export var URL_CONFIG = {
     BASE_URL: getConfigs()["BASE_URL"],
     INSERT_SUBJECT_DETAILS: "/insertclassdetails",
-    GET_SESSION_CLASS_SUBJECTS: "/subjectdetails"
+    GET_SESSION_CLASS_SUBJECTS: "/getsubjectdetails"
 };
 
 export function getConfigs() {
     if (protocol == "http://localhost:4200") {
         return {
-            BASE_URL: protocol,
+            BASE_URL: "http://localhost:8080",
             ADMIN_ICON: "../assets/admin.png",
             DATA_ENTRY_ICON: "../assets/data-entry.png"
         };

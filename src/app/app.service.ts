@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
+import { URL_CONFIG } from './app.config';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -12,26 +13,30 @@ const httpOptions = {
 @Injectable()
 export class AppService {
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) { }
 
   private extractData(res: Response) {
     let body = res;
     return body || {};
   }
 
+  getSubjectsForSession(payload) {
+    return this.http.post<any>(URL_CONFIG.BASE_URL + URL_CONFIG.GET_SESSION_CLASS_SUBJECTS, JSON.stringify(payload), httpOptions).pipe(
+      map(this.extractData),
+      catchError(this.handleError<any>('getSubjectsForSession'))
+    );
+  }
+
+  insertSubjectForSessionClass(payload) {
+    return this.http.post<any>(URL_CONFIG.BASE_URL + URL_CONFIG.INSERT_SUBJECT_DETAILS, JSON.stringify(payload), httpOptions).pipe(
+      map(this.extractData),
+      catchError(this.handleError<any>('insertSubjectForSessionClass'))
+    );
+  }
+
   getProducts(): Observable<any> {
     return this.http.get("https://jsonplaceholder.typicode.com/todos/1").pipe(
       map(this.extractData));
-  }
-
-  addProduct(product): Observable<any> {
-    console.log(product);
-    return this.http.post<any>("https://jsonplaceholder.typicode.com/todos/1", JSON.stringify(product), httpOptions).pipe(
-      tap((product) => console.log(`added product w/ id=${product.id}`)),
-      catchError(this.handleError<any>('addProduct'))
-    );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

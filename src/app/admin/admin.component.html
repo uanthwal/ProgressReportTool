@@ -13,7 +13,7 @@
             <mat-form-field>
               <mat-select placeholder="Session" [(value)]="selectedSession" (selectionChange)="onDropdownSelection()"
                 formControlName="session">
-                <mat-option [value]="2018-19">2018-19 </mat-option>
+                <mat-option value="2018-19">2018-19 </mat-option>
               </mat-select>
             </mat-form-field>
           </td>
@@ -69,7 +69,7 @@
               {{s.subject_label}}
             </td>
             <td>
-              {{s.subject_type}}
+              {{getMarkingLabelById(s.marking_type)}}
             </td>
             <td>
               <i (click)="onClickRemoveSubjectFromList(s)" class="fa-icons fa-del fa fa-trash-o"></i>

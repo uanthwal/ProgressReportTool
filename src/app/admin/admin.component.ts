@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormControl } from "@angular/forms";
+import { AppService } from '../app.service';
 
 @Component({
     selector: "app-admin",
@@ -19,7 +20,9 @@ export class AdminComponent implements OnInit {
     });
     allSubjects = [];
     selectedSubjects = [];
-    constructor() { }
+    markingType = [];
+
+    constructor(private _appService: AppService) { }
 
     ngOnInit() {
         this.classesList = [
@@ -34,20 +37,12 @@ export class AdminComponent implements OnInit {
             { id: "9", val: "Class IX" },
             { id: "10", val: "Class X" }
         ];
-        this.allSubjects = [
-            {
-                subject_id: "mathematics",
-                subject_label: "Mathematics"
-            },
-            {
-                subject_id: "english",
-                subject_label: "English"
-            },
-            {
-                subject_id: "science",
-                subject_label: "Science"
-            }
-        ];
+        this.markingType = [{
+            id: 'grade', val: 'Grade'
+        },
+        {
+            id: 'number', val: 'Number'
+        }];
     }
 
     onDropdownSelection() {
@@ -60,23 +55,24 @@ export class AdminComponent implements OnInit {
                 ? null
                 : this.selectedClass;
         if (null != this.selectedSession && null != this.selectedClass) {
-            console.log("API CALL");
-            // API Call here to fetch the data: Pending at Naina
             let payload = {
                 session: this.selectedSession,
-                class: this.selectedClass,
-                subjects: this.selectedSubjects
+                class_name: this.selectedClass,
             }
-            
-
-            this.showAddSubjectRow = true;
+            this._appService.getSubjectsForSession(payload).subscribe((data: {}) => {
+                if (null != data && data['status'] == 200) {
+                    this.allSubjects = data['all_subjects'];
+                    this.selectedSubjects = data['selected_subjects'];
+                    this.showAddSubjectRow = true;
+                }
+            });
         }
     }
 
     onClickAddSubject() {
         let selectedSubjectId = this.adminForm.controls["subject_id"].value;
-        let selectedSubjectType = this.adminForm.controls["subject_type"].value;
-        if (null != selectedSubjectId && null != selectedSubjectType) {
+        let selectedSubMarkingType = this.adminForm.controls["subject_type"].value;
+        if (null != selectedSubjectId && null != selectedSubMarkingType) {
             let selectedSubject = this.allSubjects.filter(
                 _ => _.subject_id == selectedSubjectId
             );
@@ -90,7 +86,7 @@ export class AdminComponent implements OnInit {
             }
             this.selectedSubjects.push({
                 subject_id: selectedSubject[0]["subject_id"],
-                subject_type: selectedSubjectType,
+                marking_type: selectedSubMarkingType,
                 subject_label: selectedSubject[0]["subject_label"]
             });
             this.adminForm.controls["subject_id"].setValue(null);
@@ -117,9 +113,28 @@ export class AdminComponent implements OnInit {
     onClickSubmit() {
         let payload = {
             session: this.selectedSession,
-            class: this.selectedClass,
-            subjects: this.selectedSubjects
+            class_name: this.selectedClass,
+            selected_subjects: this.selectedSubjects
         }
+        this._appService.insertSubjectForSessionClass(payload).subscribe((data: {}) => {
+            if (null != data && data['status'] == 200) {
+                alert(data['message']);
+                this.resetForm();
+            }
+        });
+    }
 
+    resetForm() {
+        this.adminForm.reset();
+        this.selectedSubjects = [];
+        this.allSubjects = [];
+        this.showAddSubjectRow = false;
+        this.selectedClass = null;
+        this.selectedSession = null;
+    }
+
+    getMarkingLabelById(id) {
+        let index = this.markingType.filter(_ => _.id == id);
+        return index.length > 0 ? index[0]['val'] : id;
     }
 }
