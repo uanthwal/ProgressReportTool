@@ -19,7 +19,7 @@ export var URL_CONFIG = {
 export function getConfigs() {
     if (protocol == "http://localhost:4200") {
         return {
-            BASE_URL: "http://192.168.0.3:8080",
+            BASE_URL: "http://localhost:8080",
             ADMIN_ICON: "../assets/admin.png",
             DATA_ENTRY_ICON: "../assets/data-entry.png",
             REPORT_GEN_ICON: "../assets/generate-report.png"

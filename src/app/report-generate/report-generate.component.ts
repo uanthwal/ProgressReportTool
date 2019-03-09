@@ -57,7 +57,6 @@ export class GenerateReportComponent implements OnInit {
     if (!this.studentReportForm.valid) {
       return;
     }
-    debugger;
     let payload = {
       session: this.studentReportForm.controls['session'].value,
       class_name: this.studentReportForm.controls['class_name'].value,
@@ -70,16 +69,17 @@ export class GenerateReportComponent implements OnInit {
     }
     this._appService.getStudentReport(payload).subscribe((data: {}) => {
       if (null != data && data['status'] == 200) {
-        alert(data['message']);
-        // event.stopPropagation();
-        // var exportReportUrl = this._reportService.getExportReportUrl(
-        //   report["documentId"]
-        // );
-        // const iframeElment = document.createElement("iframe");
-        // iframeElment.src = exportReportUrl;
-        // iframeElment.style.display = "none";
-        // document.body.appendChild(iframeElment);
+        //alert(data['message']);
+        event.stopPropagation();
+        var exportReportUrl = data['exportUrl']; //http://localhost:8080/downloadreport/{filename}
+        const iframeElment = document.createElement("iframe");
+        iframeElment.src = exportReportUrl;
+        iframeElment.style.display = "none";
+        iframeElment.id = "ifraxmop";
+        document.body.appendChild(iframeElment);
         this.resetForm();
+        // console.log("exportUrl: ", data["exportUrl"]);
+        // console.log(iframeElment);
       }
     });
   }
