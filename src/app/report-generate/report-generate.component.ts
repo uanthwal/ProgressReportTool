@@ -3,7 +3,7 @@ import {
   FormGroup,
   FormControl,
   FormBuilder,
-  Validators,
+  Validators
 } from "@angular/forms";
 import { AppService } from "../app.service";
 
@@ -20,7 +20,10 @@ export class GenerateReportComponent implements OnInit {
   showAddSubjectRow = false;
   studentReportForm: FormGroup;
 
-  constructor(private _appService: AppService, private _formBuilder: FormBuilder, ) { }
+  constructor(
+    private _appService: AppService,
+    private _formBuilder: FormBuilder
+  ) { }
 
   ngOnInit() {
     this.studentReportForm = this._formBuilder.group({
@@ -32,6 +35,7 @@ export class GenerateReportComponent implements OnInit {
       no_of_present_days: ["", Validators.required],
       total_no_of_days: ["", Validators.required],
       remarks: ["", Validators.required],
+      rank: ["", Validators.required]
     });
     this.classesList = [
       { id: "1", val: "Class I" },
@@ -58,34 +62,36 @@ export class GenerateReportComponent implements OnInit {
       return;
     }
     let payload = {
-      session: this.studentReportForm.controls['session'].value,
-      class_name: this.studentReportForm.controls['class_name'].value,
-      roll_no: this.studentReportForm.controls['roll_no'].value,
-      term: this.studentReportForm.controls['term'].value,
-      conduct: this.studentReportForm.controls['conduct'].value,
-      no_of_present_days: this.studentReportForm.controls['no_of_present_days'].value,
-      total_no_of_days: this.studentReportForm.controls['total_no_of_days'].value,
-      remarks: this.studentReportForm.controls['remarks'].value,
-    }
+      session: this.studentReportForm.controls["session"].value,
+      class_name: this.studentReportForm.controls["class_name"].value,
+      roll_no: this.studentReportForm.controls["roll_no"].value,
+      term: this.studentReportForm.controls["term"].value,
+      conduct: this.studentReportForm.controls["conduct"].value,
+      no_of_present_days: this.studentReportForm.controls["no_of_present_days"]
+        .value,
+      total_no_of_days: this.studentReportForm.controls["total_no_of_days"]
+        .value,
+      remarks: this.studentReportForm.controls["remarks"].value,
+      rank: this.studentReportForm.controls["rank"].value
+    };
     this._appService.getStudentReport(payload).subscribe((data: {}) => {
-      if (null != data && data['status'] == 200) {
-        //alert(data['message']);
+      if (null != data && data["status"] == 200) {
         event.stopPropagation();
-        var exportReportUrl = data['exportUrl']; //http://localhost:8080/downloadreport/{filename}
+        var exportReportUrl = data["exportUrl"]; //http://localhost:8080/downloadreport/{filename}
         const iframeElment = document.createElement("iframe");
         iframeElment.src = exportReportUrl;
         iframeElment.style.display = "none";
         iframeElment.id = "ifraxmop";
         document.body.appendChild(iframeElment);
         this.resetForm();
-        // console.log("exportUrl: ", data["exportUrl"]);
-        // console.log(iframeElment);
       }
     });
   }
 
   resetForm() {
     this.studentReportForm.reset();
+    this.studentReportForm.markAsPristine();
+    this.studentReportForm.markAsUntouched();
+    this.studentReportForm.updateValueAndValidity();
   }
-
 }

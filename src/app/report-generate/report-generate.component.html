@@ -16,7 +16,6 @@
               </mat-select>
             </mat-form-field>
           </td>
-
           <td colspan="3">
             <mat-form-field>
               <mat-select placeholder="Class" [(value)]="selectedClass" formControlName="class_name">
@@ -26,7 +25,6 @@
               </mat-select>
             </mat-form-field>
           </td>
-
         </tr>
         <tr>
           <td colspan="3">
@@ -34,10 +32,9 @@
               <input matInput placeholder="Roll Number" formControlName="roll_no" required>
             </mat-form-field>
           </td>
-
           <td colspan="3">
             <mat-form-field>
-              <mat-select placeholder="Term" [(value)]="selectTerm" formControlName="term">
+              <mat-select placeholder="Term" formControlName="term">
                 <mat-option *ngFor="let term of termsList" [value]="term.id">
                   {{term.val}}
                 </mat-option>
@@ -45,31 +42,34 @@
             </mat-form-field>
           </td>
         </tr>
-
         <tr>
           <td colspan="3">
             <mat-form-field>
               <input matInput placeholder="Conduct" formControlName="conduct" required>
             </mat-form-field>
           </td>
-
           <td colspan="3">
             <mat-form-field>
               <input matInput placeholder="Number of Days Present" formControlName="no_of_present_days" required>
             </mat-form-field>
           </td>
         </tr>
-
         <tr>
           <td colspan="3">
             <mat-form-field>
               <input matInput placeholder="Total Number of Days" formControlName="total_no_of_days" required>
             </mat-form-field>
           </td>
-
           <td colspan="3">
             <mat-form-field>
               <input matInput placeholder="Remarks" formControlName="remarks" required>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <mat-form-field>
+              <input matInput placeholder="Rank" formControlName="rank" required>
             </mat-form-field>
           </td>
         </tr>

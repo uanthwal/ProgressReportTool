@@ -6,6 +6,7 @@ import {
   FormBuilder
 } from "@angular/forms";
 import { AppService } from "../app.service";
+import { Router } from '@angular/router';
 
 @Component({
   selector: "app-data-entry",
@@ -38,8 +39,9 @@ export class DataEntryComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private _appService: AppService
-  ) {}
+    private _appService: AppService,
+    private _router: Router
+  ) { }
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
@@ -115,10 +117,13 @@ export class DataEntryComponent implements OnInit {
       };
       this.studentInfo = {};
       this._appService.getStudentDetails(payload).subscribe((data: {}) => {
-        if (null == data["student_details"]) {
-          alert(data["message"]);
+        if (data["status"] == 400) {
+          let result = confirm(data["message"] + ". Click OK if you wish to Add Student.");
+          if (result) {
+            this._router.navigate(['/add-student']);
+          }
         } else {
-          this.studentInfo = data["student_details"];
+          this.studentInfo = data["student_details"] != null ? data["student_details"]  : {};
           this.showAddSubjectRow = true;
         }
       });
@@ -181,8 +186,8 @@ export class DataEntryComponent implements OnInit {
 
     selectedSubjectMarks =
       selectedSubjectMarks == null ||
-      selectedSubjectMarks == undefined ||
-      selectedSubjectMarks == ""
+        selectedSubjectMarks == undefined ||
+        selectedSubjectMarks == ""
         ? null
         : selectedSubjectMarks;
     if (
@@ -196,8 +201,8 @@ export class DataEntryComponent implements OnInit {
       if (this.checkIfSubjectAlreadySelected(selectedSubjectId)) {
         alert(
           "Subject: " +
-            selectedSubject[0]["subject_label"] +
-            " is already selected"
+          selectedSubject[0]["subject_label"] +
+          " is already selected"
         );
         return;
       }
@@ -242,6 +247,15 @@ export class DataEntryComponent implements OnInit {
   onBlurRollNumber() {
     this.thirdFormGroup.reset();
     this.fourthFormGroup.reset();
+
+    this.thirdFormGroup.markAsPristine();
+    this.thirdFormGroup.markAsUntouched();
+    this.thirdFormGroup.updateValueAndValidity();
+
+    this.fourthFormGroup.markAsPristine();
+    this.fourthFormGroup.markAsUntouched();
+    this.fourthFormGroup.updateValueAndValidity();
+
     this.absentCheckSelected = false;
     this.selectedSubjects = [];
   }

@@ -61,7 +61,7 @@
             <tr>
               <td colspan="3">
                 <mat-form-field>
-                  <mat-select placeholder="Term" [(value)]="selectTerm" formControlName="term">
+                  <mat-select placeholder="Term" formControlName="term">
                     <mat-option *ngFor="let term of termsList" [value]="term.id">
                       {{term.val}}
                     </mat-option>

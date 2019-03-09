@@ -14,6 +14,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { HttpClientModule } from '@angular/common/http';
 import { AppService } from './app.service';
 import { GenerateReportComponent } from './report-generate/report-generate.component';
+import { AddStudentComponent } from './add-student/add-student.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { GenerateReportComponent } from './report-generate/report-generate.compo
     HomeComponent,
     AdminComponent,
     DataEntryComponent,
-    GenerateReportComponent
+    GenerateReportComponent,
+    AddStudentComponent
   ],
   imports: [
     BrowserModule,

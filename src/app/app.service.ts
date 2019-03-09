@@ -97,6 +97,19 @@ export class AppService {
       );
   }
 
+  addStudentInfo(payload) {
+    return this.http
+      .post<any>(
+        URL_CONFIG.BASE_URL + URL_CONFIG.ADD_STUDENT_INFO,
+        JSON.stringify(payload),
+        httpOptions
+      )
+      .pipe(
+        map(this.extractData),
+        catchError(this.handleError<any>("addStudentInfo"))
+      );
+  }
+
   private handleError<T>(operation = "operation", result?: T) {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure
